@@ -1,27 +1,5 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import styled from 'styled-components';
-
-const Layout = styled.div`
-  display: flex;
-  min-height: 100vh;
-`;
-
-const HomeContent = styled.div`
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-`;
-
-const Message = styled.div`
-  color: #ffbb00;
-  text-align: center;
-  font-family: sans-serif;
-  background: linear-gradient(180deg, #050816, #010204);
-  padding: 40px;
-  font-size: 1.5rem;
-`;
 
 const Home = () => {
   const pageUrl = 'https://lic-neemuch.onrender.com';
@@ -34,13 +12,7 @@ const Home = () => {
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={pageUrl} />
       </Helmet>
-      <Layout>
-        <HomeContent>
-          <Message>
-            This page should have been rendered server-side. If you see this message on initial load, SSR may not be working correctly.
-          </Message>
-        </HomeContent>
-      </Layout>
+      {/* No content since SSR handles the homepage */}
     </>
   );
 };
