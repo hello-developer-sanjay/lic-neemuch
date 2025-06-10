@@ -2,7 +2,7 @@ import React, { useEffect, useRef, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
+import 'react-toastify/dist/ReactToastify.css'; // Updated import path
 import { Helmet } from 'react-helmet';
 
 const Rating = lazy(() => import('../components/Rating'));
