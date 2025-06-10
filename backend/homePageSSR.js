@@ -4,9 +4,8 @@ const LICReview = require('./models/LICReview');
 const LICRating = require('./models/LICRating');
 
 const router = express.Router();
-const cache = new Map();
 
-const escapeHTML = str => {
+const escapeHTML = (str) => {
   if (!str || typeof str !== 'string') return '';
   return str
     .replace(/&/g, '&amp;')
@@ -50,49 +49,11 @@ const renderStars = (rating) => {
 
 router.get('/', async (req, res) => {
   console.log('SSR Request received for / at', new Date().toISOString());
-  const cacheKey = 'ssr:home';
-  if (cache.has(cacheKey)) {
-    console.log('SSR Cache hit for / at', new Date().toISOString());
-    const cachedHtml = cache.get(cacheKey);
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600');
-    res.setHeader('ETag', require('crypto').createHash('md5').update(cachedHtml).digest('hex'));
-    return res.send(cachedHtml);
-  }
 
   try {
     const { averageRating, ratingCount, reviews } = await fetchRatingsAndReviews();
     const pageUrl = 'https://lic-backend-8jun.onrender.com/';
     const metaDescription = `Jitendra Patidar, LIC Development Officer in Neemuch, offers trusted life insurance and financial planning. Rated ${averageRating}/5 by ${ratingCount} clients.`;
-
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      name: 'LIC Neemuch',
-      description: metaDescription,
-      url: pageUrl,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Vikas Nagar, Scheme No. 14-3, Neemuch Chawni',
-        addressLocality: 'Neemuch',
-        addressRegion: 'Madhya Pradesh',
-        postalCode: '458441',
-        addressCountry: 'IN',
-      },
-      telephone: '+917987235207',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: averageRating,
-        reviewCount: ratingCount,
-        bestRating: '5',
-        worstRating: '1',
-      },
-      review: reviews.map(review => ({
-        '@type': 'Review',
-        author: { '@type': 'Person', name: review.username },
-        datePublished: new Date(review.createdAt).toISOString().split('T')[0],
-        reviewBody: review.comment,
-      })),
-    };
 
     const htmlContent = `
       <nav class="navbar" aria-label="Main navigation">
@@ -161,19 +122,9 @@ router.get('/', async (req, res) => {
         <meta name="keywords" content="LIC Neemuch, Jitendra Patidar, life insurance, financial planning">
         <meta name="author" content="Jitendra Patidar">
         <meta name="robots" content="index, follow">
-        <meta property="og:type" content="website">
-        <meta property="og:title" content="LIC Neemuch: How Jitendra Patidar Ensures Your Secure Life">
-        <meta property="og:description" content="${escapeHTML(metaDescription)}">
-        <meta property="og:url" content="${pageUrl}">
-        <meta property="og:image" content="https://mys3resources.s3.ap-south-1.amazonaws.com/lic-neemuch-logo.png">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="LIC Neemuch: How Jitendra Patidar Ensures Your Secure Life">
-        <meta name="twitter:description" content="${escapeHTML(metaDescription)}">
-        <meta name="twitter:image" content="https://mys3resources.s3.ap-south-1.amazonaws.com/lic-neemuch-logo.png">
         <title>LIC Neemuch: How Jitendra Patidar Ensures Your Secure Life</title>
         <link rel="canonical" href="${pageUrl}">
         <link rel="icon" type="image/png" href="https://mys3resources.s3.ap-south-1.amazonaws.com/lic-neemuch-logo.png" sizes="32x32">
-        <script type="application/ld+json">${JSON.stringify(structuredData)}</script>
         <style>
           :root {
             --primary-color: #ffbb00;
@@ -290,10 +241,7 @@ router.get('/', async (req, res) => {
     `;
 
     console.log('SSR HTML generated, length:', html.length);
-    cache.set(cacheKey, html);
     res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600');
-    res.setHeader('ETag', require('crypto').createHash('md5').update(html).digest('hex'));
     res.status(200).send(html);
     console.log('SSR Response sent for / at', new Date().toISOString());
   } catch (error) {
