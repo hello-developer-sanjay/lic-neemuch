@@ -20,13 +20,14 @@ console.log('MONGODB_URI_LIC:', process.env.MONGODB_URI_LIC ? '[REDACTED]' : 'No
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://lic-backend-8jun.onrender.com'],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Accept'],
-  credentials: true,
-  maxAge: 86400,
-}));
+// Temporarily disable CORS to test
+// app.use(cors({
+//   origin: ['http://localhost:5173', 'https://lic-backend-8jun.onrender.com'],
+//   methods: ['GET', 'POST', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Accept'],
+//   credentials: true,
+//   maxAge: 86400,
+// }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
