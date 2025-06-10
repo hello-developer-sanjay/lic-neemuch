@@ -48,11 +48,11 @@ const renderStars = (rating) => {
 };
 
 router.get('/', async (req, res) => {
-  console.log('SSR Request received for / at', new Date().toISOString());
+  console.log('SSR route hit for / at', new Date().toISOString());
 
   try {
     const { averageRating, ratingCount, reviews } = await fetchRatingsAndReviews();
-    const pageUrl = 'https://lic-backend-8jun.onrender.com/';
+    const pageUrl = 'https://lic-neemuch.onrender.com/';
     const metaDescription = `Jitendra Patidar, LIC Development Officer in Neemuch, offers trusted life insurance and financial planning. Rated ${averageRating}/5 by ${ratingCount} clients.`;
 
     const htmlContent = `
@@ -124,7 +124,7 @@ router.get('/', async (req, res) => {
         <meta name="robots" content="index, follow">
         <title>LIC Neemuch: How Jitendra Patidar Ensures Your Secure Life</title>
         <link rel="canonical" href="${pageUrl}">
-        <link rel="icon" type="image/png" href="https://mys3resources.s3.ap-south-1.amazonaws.com/lic-neemuch-logo.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="https://mys3resources.s3.ap-south-1.amazonaws.com/LIC/titleImage_LICBlo.jpeg" sizes="32x32">
         <style>
           :root {
             --primary-color: #ffbb00;
@@ -246,7 +246,7 @@ router.get('/', async (req, res) => {
     console.log('SSR Response sent for / at', new Date().toISOString());
   } catch (error) {
     console.error('SSR Error:', error.stack);
-    const errorHtml = `
+    res.status(500).send(`
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -284,9 +284,7 @@ router.get('/', async (req, res) => {
         </div>
       </body>
       </html>
-    `;
-    res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-    res.status(500).send(errorHtml);
+    `);
   }
 });
 
