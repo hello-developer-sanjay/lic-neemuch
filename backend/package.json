@@ -15,10 +15,7 @@
     "express": "^5.1.0",
     "mongoose": "^8.15.1"
   },
-  },
-  "resolutions": {
-    "path-to-regexp": "0.1.10"
-  },
+  
   "keywords": [
     "Express",
     "MongoDB",
