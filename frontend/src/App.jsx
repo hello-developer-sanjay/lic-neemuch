@@ -16,7 +16,6 @@ function App() {
   const [isSSR, setIsSSR] = useState(false);
 
   useEffect(() => {
-    // Check if the root element has server-rendered content
     const rootElement = document.getElementById('root');
     if (rootElement && rootElement.innerHTML.trim() && window.location.pathname === '/') {
       setIsSSR(true);
@@ -25,17 +24,17 @@ function App() {
 
   return (
     <Router>
-      <div className="relative z-0">
-        <ScrollToTop />
-        <Routes>
-          {/* If SSR content is present for '/', render an empty component to avoid hydration mismatch */}
-          <Route path="/" element={isSSR ? <div /> : <Home />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/join" element={<div>Join Page (TBD)</div>} />
-          <Route path="/services" element={<div>Services Page (TBD)</div>} />
-          <Route path="/about" element={<div>About Page (TBD)</div>} />
-        </Routes>
-      </div>
+      <ScrollToTop />
+      <Routes>
+        {/* For SSR homepage, render nothing to match the server-rendered HTML */}
+        <Route path="/" element={isSSR ? null : <Home />} />
+        {/* Other routes wrap content in a div for styling */}
+        <Route path="/reviews" element={<div className="relative z-0"><Reviews /></div>} />
+        <Route path="/join" element={<div className="relative z-0"><div>Join Page (TBD)</div></div>} />
+        <Route path="/services" element={<div className="relative z-0"><div>Services Page (TBD)</div></div>} />
+        <Route path="/about" element={<div className="relative z-0"><div>About Page (TBD)</div></div>} />
+        <Route path="*" element={<div className="relative z-0"><div><h1>Not Found</h1><p>Page not found (client-side).</p></div></div>} />
+      </Routes>
     </Router>
   );
 }
