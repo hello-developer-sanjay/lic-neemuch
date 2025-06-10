@@ -19,13 +19,7 @@ console.log('MONGODB_URI_LIC:', process.env.MONGODB_URI_LIC ? '[REDACTED]' : 'No
 console.log('NODE_ENV:', process.env.NODE_ENV);
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://lic-backend-8jun.onrender.com'],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Accept'],
-  credentials: true,
-  maxAge: 86400,
-}));
+app.use(cors()); // Simplify CORS for now
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -51,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 // SSR Logic for Homepage
 const cache = new Map();
 
-const escapeHTML = str => {
+const escapeHTML = (str) => {
   if (!str || typeof str !== 'string') return '';
   return str
     .replace(/&/g, '&amp;')
@@ -95,7 +89,7 @@ const renderStars = (rating) => {
 
 app.get('/', async (req, res) => {
   console.log('SSR Request received for / at', new Date().toISOString());
-  const cacheKey =  cacheKey = 'ssr:home';
+  const cacheKey = 'ssr:home';
   if (cache.has(cacheKey)) {
     console.log('SSR Cache hit for / at', new Date().toISOString());
     const cachedHtml = cache.get(cacheKey);
@@ -420,7 +414,7 @@ app.post('/api/lic/submit-query', async (req, res) => {
       return res.status(400).json({ error: 'Name and query are required' });
     }
     const newQuery = new LICQuery({ name, email, query });
-    await newQuery.save();
+    await newFeedback.save();
     res.status(201).json({ message: 'Query submitted successfully' });
   } catch (error) {
     console.error('Error submitting query:', error);
