@@ -1,0 +1,27 @@
+{
+  "name": "lic-neemuch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "server.js",
+  "description": "LIC Neemuch App - Backend with integrated Frontend (React + Vite)",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1"
+  },
+  "keywords": [
+    "Express",
+    "MongoDB",
+    "LIC",
+    "Render",
+    "Fullstack"
+  ],
+  "author": "",
+  "license": "ISC"
+}
