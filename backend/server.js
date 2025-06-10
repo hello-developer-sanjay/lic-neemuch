@@ -38,11 +38,26 @@ mongoose.connect(process.env.MONGODB_URI_LIC, {
   console.error('MongoDB connection error:', error);
 });
 
-// SSR Route - Place before static file serving to ensure it takes precedence
+// SSR Route - Takes precedence for /
 app.use('/', homePageSSR);
 
-// Serve static assets (Vite build) - This will handle assets like /assets/index.js
-app.use(express.static(path.join(__dirname, 'dist')));
+// Serve static assets (Vite build) with logging
+const staticMiddleware = express.static(path.join(__dirname, 'dist'));
+app.use((req, res, next) => {
+  console.log(`Attempting to serve static file: ${req.url}`);
+  staticMiddleware(req, res, (err) => {
+    if (err) {
+      console.error(`Static file error for ${req.url}:`, err);
+      return next(err);
+    }
+    if (!res.headersSent) {
+      console.log(`Static file not found: ${req.url}, proceeding to next middleware`);
+      next();
+    } else {
+      console.log(`Static file served: ${req.url}`);
+    }
+  });
+});
 
 // API Endpoints
 app.post('/api/lic/submit-feedback', async (req, res) => {
@@ -148,8 +163,12 @@ app.get('/api/lic/ratings', async (req, res) => {
   }
 });
 
-// Fallback for client-side routes - Serve dist/index.html for non-API, non-SSR routes
+// Fallback for client-side routes - Exclude API and static asset routes
 app.get('*', (req, res) => {
+  if (req.url.startsWith('/api/') || req.url.startsWith('/assets/')) {
+    console.log(`Skipping fallback for ${req.url}`);
+    return res.status(404).send('Not found');
+  }
   console.log(`Fallback route hit: ${req.url} at ${new Date().toISOString()}`);
   res.sendFile(path.join(__dirname, 'dist/index.html'), (err) => {
     if (err) {
