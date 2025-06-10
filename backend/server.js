@@ -38,11 +38,11 @@ mongoose.connect(process.env.MONGODB_URI_LIC, {
   console.error('MongoDB connection error:', error);
 });
 
-// Serve static assets (Vite build)
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// SSR Route
+// SSR Route - Place before static file serving to ensure it takes precedence
 app.use('/', homePageSSR);
+
+// Serve static assets (Vite build) - This will handle assets like /assets/index.js
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // API Endpoints
 app.post('/api/lic/submit-feedback', async (req, res) => {
@@ -148,10 +148,15 @@ app.get('/api/lic/ratings', async (req, res) => {
   }
 });
 
-// Fallback for client-side routes
+// Fallback for client-side routes - Serve dist/index.html for non-API, non-SSR routes
 app.get('*', (req, res) => {
   console.log(`Fallback route hit: ${req.url} at ${new Date().toISOString()}`);
-  res.sendFile(path.join(__dirname, 'dist/index.html'));
+  res.sendFile(path.join(__dirname, 'dist/index.html'), (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      res.status(500).send('Error serving page');
+    }
+  });
 });
 
 const PORT = process.env.PORT || 4500;
